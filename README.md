@@ -1,8 +1,9 @@
 # RSJP (Ridiculously simple JSON parser)
 
+- Single file
 - Allows unquoted keys and values
 - Objects and Arrays are both maps. Arrays are maps with incremented number keys.
-- ignores preamble (until finds a '{' or '[' character)
+- Ignores preamble (until finds a '{' or '[' character)
 
 
 Example:
