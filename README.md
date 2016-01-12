@@ -3,7 +3,7 @@
 - Single file solution
 - Allows unquoted keys and values
 - Key/Value maps and Arrays are both maps. Arrays are maps with incremented number keys.
-- Everything else is a String (i.e. integers, reals)
+- Everything else is a String (i.e. integers, reals, booleans)
 - Ignores preamble (until finds a '{' or '[' character)
 - Ignores postamble (everything after last closing '}' or ']')
 - Easily extract data from deep hierachies
