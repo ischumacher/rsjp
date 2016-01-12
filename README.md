@@ -6,6 +6,7 @@
 - Everything else is a String (i.e. integers, reals)
 - Ignores preamble (until finds a '{' or '[' character)
 - Ignores postamble (everything after last closing '}' or ']')
+- Easily extract data from deep hierachies
 
 Example:
 
@@ -32,10 +33,10 @@ Example:
 				  + "        }\n"
 				  + "    }\n"
 				  + "}";
-		Map<String, Object> json = Json.parseJSON(Json.getIterator(str));
-		System.out.println(json);
-		System.out.println(Json.get(json, "glossary", "GlossDiv", "GlossList", "GlossEntry", "GlossDef", "GlossSeeAlso", "1"));
-		System.out.println(Json.get(json, "glossary", "GlossDiv", "GlossList"));
+		Map<String, Object> jso = Json.parseJSON(Json.getIterator(str));
+		System.out.println(jso);
+		System.out.println(Json.get(jso, "glossary", "GlossDiv", "GlossList", "GlossEntry", "GlossDef", "GlossSeeAlso", "1"));
+		System.out.println(Json.get(jso, "glossary", "GlossDiv", "GlossList"));
     }
 
 Ouput:
