@@ -59,11 +59,11 @@ class ReaderCharacterIterator implements Iterator<Character> {
 	}
 }
 public class Json {
-	public static Iterator<Character> getIterator(String str) {
-		return new StringCharacterIterator(str);
+	public static Map<String, Object> parseJSON(Reader r) throws IOException {
+		return parseJSON(new ReaderCharacterIterator(r));
 	}
-	public static Iterator<Character> getIterator(Reader r) throws IOException {
-		return new ReaderCharacterIterator(r);
+	public static Map<String, Object> parseJSON(String str) {
+		return parseJSON(new StringCharacterIterator(str));
 	}
 	public static Map<String, Object> parseJSON(Iterator<Character> iter) {
 		while (iter.hasNext()) {
@@ -77,7 +77,12 @@ public class Json {
 	public static Object get(Map<String, Object> map, String... keys) {
 		Map<String, Object> m = map;
 		for (int i = 0; i < keys.length - 1; ++i) {
-			m = (Map<String, Object>) m.get(keys[i]);
+			Object obj = m.get(keys[i]);
+			if (obj instanceof Map) {
+				m = (Map<String, Object>) m.get(keys[i]);
+			} else {
+				return null;
+			}
 		}
 		return m.get(keys[keys.length - 1]);
 	}
