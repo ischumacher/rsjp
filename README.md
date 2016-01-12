@@ -1,10 +1,11 @@
 # RSJP (Ridiculously simple JSON parser)
 
-- Single file
+- Single file solution
 - Allows unquoted keys and values
-- Objects and Arrays are both maps. Arrays are maps with incremented number keys.
+- Key/Value maps and Arrays are both maps. Arrays are maps with incremented number keys.
+- Everything else is a String (i.e. integers, reals)
 - Ignores preamble (until finds a '{' or '[' character)
-
+- Ignores postamble (everything after last closing '}' or ']')
 
 Example:
 
