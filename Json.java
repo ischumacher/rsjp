@@ -59,6 +59,34 @@ class ReaderCharacterIterator implements Iterator<Character> {
 	}
 }
 public class Json {
+	public static void main(String[] args) {
+		// EXAMPLE JSON
+		String str = "{\n"
+				  + "    \"glossary\": {\n"
+				  + "        \"title\": \"example glossary\",\n"
+				  + "		\"GlossDiv\": {\n"
+				  + "            \"title\": \"S\",\n"
+				  + "			\"GlossList\": {\n"
+				  + "                \"GlossEntry\": {\n"
+				  + "                    \"ID\": \"SGML\",\n"
+				  + "					\"SortAs\": \"SGML\",\n"
+				  + "					\"GlossTerm\": \"Standard Generalized Markup Language\",\n"
+				  + "					\"Acronym\": \"SGML\",\n"
+				  + "					\"Abbrev\": \"ISO 8879:1986\",\n"
+				  + "					\"GlossDef\": {\n"
+				  + "                        \"para\": \"A meta-markup language, used to create markup languages such as DocBook.\",\n"
+				  + "						\"GlossSeeAlso\": [\"GML\", \"XML\"]\n"
+				  + "                    },\n"
+				  + "					\"GlossSee\": \"markup\"\n"
+				  + "                }\n"
+				  + "            }\n"
+				  + "        }\n"
+				  + "    }\n"
+				  + "}";
+		Map<String, Object> jso = Json.parseJSON(str);
+		System.out.println(jso);
+		System.out.println(Json.get(jso, "glossary", "GlossDiv", "GlossList", "GlossEntry", "Acronym"));
+	}
 	public static Map<String, Object> parseJSON(Reader r) throws IOException {
 		return parseJSON(new ReaderCharacterIterator(r));
 	}
@@ -90,58 +118,7 @@ public class Json {
 		Map<String, Object> map = new LinkedHashMap<String, Object>() {
 			@Override
 			public String toString() {
-				StringBuilder sb = new StringBuilder();
-				sb.append('{');
-				String sep = "";
-				for (Map.Entry<String, Object> me : entrySet()) {
-					sb.append(sep);
-					sb.append(me.getKey());
-					sb.append(": ");
-					Object v = me.getValue();
-					if (v instanceof String) {
-						sb.append(safeValue((String) me.getValue()));
-					} else {
-						sb.append(me.getValue());
-					}
-					sep = ", ";
-				}
-				sb.append("}");
-				return sb.toString();
-			}
-			private String safeValue(String value) {
-				char[] ch = value.toCharArray();
-				boolean quote = false;
-				for (int i = 0; i < ch.length; ++i) {
-					switch (ch[i]) {
-						case ':':
-						case '\'':
-						case ' ':
-						case '\n':
-						case '\t':
-						case '\r':
-						case ',':
-						case '\"':
-						case '{':
-						case '[':
-						case '}':
-						case ']':
-							quote = true;
-							break;
-					}
-				}
-				if (!quote) {
-					return value;
-				}
-				StringBuilder sb = new StringBuilder();
-				sb.append('\"');
-				for (int i = 0; i < ch.length; ++i) {
-					if (ch[i] == '"') {
-						sb.append('\'');
-					}
-					sb.append(ch[i]);
-				}
-				sb.append('\"');
-				return sb.toString();
+				return toJSONString(this);
 			}
 		};
 		char ch;
@@ -205,6 +182,76 @@ public class Json {
 			sb.append(ch);
 			ch = iter.next();
 		}
+		return sb.toString();
+	}
+	public static String toJSONString(Map<String, Object> map) {
+		return _toJSONString(map, 0);
+	}
+	private static final String ONETAB = "   ";
+	private static String _toJSONString(Map<String, Object> map, int level) {
+		StringBuilder sb = new StringBuilder();
+		StringBuilder tab = new StringBuilder();
+		for (int i = 0; i < level; ++i) {
+			tab.append(ONETAB);
+		}
+		if (level > 0) {
+			sb.append('\n').append(tab);
+		}
+		sb.append('{');
+		String sep = "";
+		for (Map.Entry<String, Object> me : map.entrySet()) {
+			sb.append(sep);
+			sb.append('\n');
+			sb.append(tab);
+			sb.append(ONETAB);
+			sb.append(me.getKey());
+			sb.append(": ");
+			Object v = me.getValue();
+			if (v instanceof Map) {
+				sb.append(_toJSONString((Map<String, Object>) v, ++level));
+			} else {
+				sb.append(safeValue((String) me.getValue()));
+			}
+			sep = ", ";
+		}
+		sb.append('\n');
+		sb.append(tab);
+		sb.append("}");
+		return sb.toString();
+	}
+	private static String safeValue(String value) {
+		char[] ch = value.toCharArray();
+		boolean quote = false;
+		for (int i = 0; i < ch.length; ++i) {
+			switch (ch[i]) {
+				case ':':
+				case '\'':
+				case ' ':
+				case '\n':
+				case '\t':
+				case '\r':
+				case ',':
+				case '\"':
+				case '{':
+				case '[':
+				case '}':
+				case ']':
+					quote = true;
+					break;
+			}
+		}
+		if (!quote) {
+			return value;
+		}
+		StringBuilder sb = new StringBuilder();
+		sb.append('\"');
+		for (int i = 0; i < ch.length; ++i) {
+			if (ch[i] == '"') {
+				sb.append('\'');
+			}
+			sb.append(ch[i]);
+		}
+		sb.append('\"');
 		return sb.toString();
 	}
 }
